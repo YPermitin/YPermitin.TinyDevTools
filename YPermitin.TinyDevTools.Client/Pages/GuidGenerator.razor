@@ -1,0 +1,211 @@
+﻿@page "/guidGenerator"
+@using System.Text
+@using System.Timers
+@using YPermitin.TinyDevTools.Client.Helpers
+@using YPermitin.TinyDevTools.Client.Services
+@inject ClipboardService ClipboardService
+
+<PageTitle>Генератор GUID</PageTitle>
+
+
+<h1>Генератор GUID</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <button class="btn btn-primary col-12" @onclick="GenerateGuid">Сформировать новые GUID'ы</button>
+        </div>
+        <div class="col-sm">
+            <button class="@_copyToClipboardButtonClass" @onclick="CopyToClipboard">@_copyToClipboardButtonName</button>
+        </div>
+    </div>
+    <hr class="my-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label for="guidsCount">Количество GUID'ов (1 - 100.000):</label>
+            <input type="number"
+                   id="guidsCount"
+                   class="form-control"
+                   placeholder="Количество GUID'ов"
+                   aria-label="Количество GUID'ов"
+                   aria-describedby="basic-addon1"
+                   min="1"
+                   max="@MaxGuidToGenerate"
+                   @bind="GuidsCount">
+        </div>
+        <div class="col-md-3">
+            <label for="formatAddHyphens">Дефисы:</label>
+            <input type="checkbox"
+                   id="formatAddHyphens"
+                   class="form-check-input"
+                   aria-label="Показать дефис"
+                   aria-describedby="basic-addon1"
+                   @bind="_formatAddHyphens">
+
+            <label for="formatAddHyphens">В верхнем регистре:</label>
+            <input type="checkbox"
+                   id="formatUppercase"
+                   class="form-check-input"
+                   aria-label="Привести к верхнему регистру"
+                   aria-describedby="basic-addon1"
+                   @bind="_formatToUpperCase">
+        </div>
+        <div class="col-md-3">
+            <label for="formatAddBraces">Фигурные скобки:</label>
+            <input type="checkbox"
+                   id="formatAddBraces"
+                   class="form-check-input"
+                   aria-label="Добавить фигурные скобки"
+                   aria-describedby="basic-addon1"
+                   @bind="_formatAddBraces">
+
+            <label for="encodingBase64">Base64:</label>
+            <input type="checkbox"
+                   id="encodingBase64"
+                   class="form-check-input"
+                   aria-label="BASE64"
+                   aria-describedby="basic-addon1"
+                   @bind="_encodingBase64">
+        </div>
+    </div>
+    <hr class="my-4">
+    <div class="input-group mb-3">
+        <div class="input-group">
+            <textarea class="form-control" rows="@TextAreaRowsSize" readonly="readonly"
+                aria-label="Сформированные GUID'ы">@_generatedGuidsPresentation</textarea>
+        </div>
+    </div>
+    <hr class="my-4">
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <div class="alert alert-primary" role="alert">
+                <h4>Что такое GUID?</h4>
+                <p>GUID (он же UUID) - это аббревиатура от 'Globally Unique Identifier' (или 'Universally Unique
+                    Identifier'). Это 128-битное целое число, используемое для идентификации ресурсов. Термин GUID
+                    обычно используется разработчиками, работающими с технологиями Microsoft, в то время как UUID
+                    используется везде.</p>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="alert alert-primary" role="alert">
+                <h4>Насколько уникален GUID?</h4>
+                <p>128-битный код достаточно велик, а алгоритм генерации достаточно уникален, чтобы, если бы в течение 1
+                    года генерировалось 1 000 000 000 идентификаторов GUID в секунду, вероятность дублирования
+                    составляла бы всего 50%. Или если бы каждый человек на Земле сгенерировал 600 000 000
+                    идентификаторов GUID, вероятность дублирования составляла бы всего 50%.</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <div class="alert alert-primary" role="alert">
+                <h4>Как используются GUID'ы?</h4>
+                <p>GUID'ы используются при разработке корпоративного программного обеспечения на C#, Java и C++ в
+                    качестве ключей базы данных, идентификаторов компонентов или практически везде, где требуется
+                    действительно уникальный идентификатор. Идентификаторы GUID также используются для идентификации
+                    всех интерфейсов и объектов в COM-программировании.</p>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="alert alert-primary" role="alert">
+                <h4>Дополнительная информация</h4>
+                <a href="https://ru.wikipedia.org/wiki/UUID" target="_blank">GUID (UUID) - информация на Wikipedia</a>
+                <a href="https://docs.microsoft.com/ru-ru/dotnet/api/system.guid?view=net-6.0" target="_blank">Структура
+                    GUID'а</a>
+                <a href="https://www.ietf.org/rfc/rfc4122.txt" target="_blank">RFC 4122</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private const int MaxGuidToGenerate = 10000;
+    private int _guidsCount = 1;
+    private int GuidsCount
+    {
+        get => Math.Min(_guidsCount, MaxGuidToGenerate);
+        set => _guidsCount = Math.Min(value, MaxGuidToGenerate);
+    }
+
+    private bool _formatAddHyphens = true;
+    private bool _formatToUpperCase;
+    private bool _formatAddBraces;
+    private bool _encodingBase64;
+
+    private string? _generatedGuidsPresentation = string.Empty;
+    private readonly List<Guid> _generatedGuids = new();
+    private int TextAreaRowsSize => Math.Min(Math.Max(1, _generatedGuids.Count), 10);
+
+    private string _copyToClipboardButtonName = "Скопировать в буфер";
+    private string _copyToClipboardButtonClass = "btn btn-primary col-12";
+    private Timer? _copyToClipboardTimer;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _copyToClipboardTimer = new Timer(1500);
+        _copyToClipboardTimer.Elapsed += OnRestoreCopyToClipboardButton;
+
+        GenerateGuid();
+    }
+
+    private async Task CopyToClipboard()
+    {
+        if (_generatedGuidsPresentation != null)
+        {
+            await ClipboardService.WriteTextAsync(_generatedGuidsPresentation);
+
+            _copyToClipboardButtonName = "Скопировано в буфер";
+            _copyToClipboardButtonClass = "btn btn-success col-12";
+
+            _copyToClipboardTimer?.Stop();
+            _copyToClipboardTimer?.Start();
+        }
+    }
+
+    private void OnRestoreCopyToClipboardButton(Object? source, ElapsedEventArgs e)
+    {
+        _copyToClipboardButtonName = "Скопировать в буфер";
+        _copyToClipboardButtonClass = "btn btn-primary col-12";
+
+        _copyToClipboardTimer?.Stop();
+
+        StateHasChanged();
+    }
+    
+    private void GenerateGuid()
+    {
+        _generatedGuids.Clear();
+        for (int i = 0; i < _guidsCount; i++)
+        {
+            _generatedGuids.Add(Guid.NewGuid());
+        }
+
+        StringBuilder generatedGuidsPresentationBuilder = new StringBuilder();
+
+        foreach (var generatedGuid in _generatedGuids)
+        {
+            string formattedGuid = generatedGuid.ToString();
+            
+            if (_formatToUpperCase)
+                formattedGuid = formattedGuid.ToUpper();
+            if (_formatAddBraces)
+                formattedGuid = "{" + formattedGuid + "}";
+            if (!_formatAddHyphens)
+                formattedGuid = formattedGuid.Replace("-", string.Empty);
+
+            if (_encodingBase64)
+                formattedGuid = StringHelper.Base64Encode(formattedGuid);
+            
+
+            generatedGuidsPresentationBuilder.AppendLine(formattedGuid);
+        }
+
+        _generatedGuidsPresentation = generatedGuidsPresentationBuilder.ToString();
+    }
+}
