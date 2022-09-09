@@ -17,9 +17,6 @@
                 <button class="btn btn-primary col-12" @onclick="GenerateGuid">Сформировать новые</button>
             </div>
             <div class="col-md-4">
-                <button class="@_copyToClipboardButtonClass" @onclick="CopyToClipboard">@_copyToClipboardButtonName</button>
-            </div>
-            <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-text">Количество (1-@MaxGuidToGenerate)</span>
                     <input type="number" 
@@ -30,6 +27,9 @@
                            max="@MaxGuidToGenerate"
                            @bind="GuidsCount">
                 </div>
+            </div>
+            <div class="col-md-4">
+                <button class="@_copyToClipboardButtonClass" @onclick="CopyToClipboard">@_copyToClipboardButtonName</button>
             </div>
         </div>
         <div class="lines"></div>
