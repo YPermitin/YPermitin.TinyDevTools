@@ -8,119 +8,135 @@
 <PageTitle>Генератор GUID</PageTitle>
 
 
-<h1>Генератор GUID</h1>
+<h1 class="display-4 fw-bold text-center">Генератор GUID</h1>
 
 <div class="container">
-    <div class="row">
-        <div class="col-sm">
-            <button class="btn btn-primary col-12" @onclick="GenerateGuid">Сформировать новые GUID'ы</button>
+    <main>
+        <div class="row">
+            <div class="col-md-4">
+                <button class="btn btn-primary col-12" @onclick="GenerateGuid">Сформировать новые</button>
+            </div>
+            <div class="col-md-4">
+                <button class="@_copyToClipboardButtonClass" @onclick="CopyToClipboard">@_copyToClipboardButtonName</button>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text">Количество (1-@MaxGuidToGenerate)</span>
+                    <input type="number" 
+                           class="form-control" 
+                           id="guidsCount" 
+                           placeholder="Количество"
+                           min="1"
+                           max="@MaxGuidToGenerate"
+                           @bind="GuidsCount">
+                </div>
+            </div>
         </div>
-        <div class="col-sm">
-            <button class="@_copyToClipboardButtonClass" @onclick="CopyToClipboard">@_copyToClipboardButtonName</button>
+        <div class="lines"></div>
+        <div class="row">
+            <div class="col-4">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="formatAddHyphens" @bind="_formatAddHyphens">
+                    <label class="form-check-label" for="formatAddHyphens">Дефисы</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="formatUppercase" @bind="_formatToUpperCase">
+                    <label class="form-check-label" for="formatUppercase">Верхний регистр</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="formatAddBraces" @bind="_formatAddBraces">
+                    <label class="form-check-label" for="formatAddBraces">Фигурные скобки</label>
+                </div>
+            </div>
         </div>
-    </div>
-    <hr class="my-4">
-    <div class="row">
-        <div class="col-md-3">
-            <label for="guidsCount">Количество GUID'ов (1 - 100.000):</label>
-            <input type="number"
-                   id="guidsCount"
-                   class="form-control"
-                   placeholder="Количество GUID'ов"
-                   aria-label="Количество GUID'ов"
-                   aria-describedby="basic-addon1"
-                   min="1"
-                   max="@MaxGuidToGenerate"
-                   @bind="GuidsCount">
+        <div class="row">
+            <div class="col-4">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="encodingBase64" @bind="_encodingBase64">
+                    <label class="form-check-label" for="encodingBase64">Base64</label>
+                </div>
+            </div>
         </div>
-        <div class="col-md-3">
-            <label for="formatAddHyphens">Дефисы:</label>
-            <input type="checkbox"
-                   id="formatAddHyphens"
-                   class="form-check-input"
-                   aria-label="Показать дефис"
-                   aria-describedby="basic-addon1"
-                   @bind="_formatAddHyphens">
+        <div class="lines"></div>
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group">
+                    <div class="input-group">
+                        <textarea class="form-control" rows="@TextAreaRowsSize" readonly="readonly">@_generatedGuidsPresentation</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="lines"></div>
+        
+        <div class="row row-cols-1 row-cols-md-3 mb-3">
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal text-center">Что такое GUID?</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>GUID (он же UUID) - это аббревиатура от 'Globally Unique Identifier' (или 'Universally Unique
+                            Identifier'). Это 128-битное целое число, используемое для идентификации ресурсов. Термин GUID
+                            обычно используется разработчиками, работающими с технологиями Microsoft, в то время как UUID
+                            используется везде.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal text-center">Насколько уникален GUID?</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>128-битный код достаточно велик, а алгоритм генерации достаточно уникален, чтобы, если бы в течение 1
+                            года генерировалось 1 000 000 000 идентификаторов GUID в секунду, вероятность дублирования
+                            составляла бы всего 50%. Или если бы каждый человек на Земле сгенерировал 600 000 000
+                            идентификаторов GUID, вероятность дублирования составляла бы всего 50%.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal text-center">Как используются GUID'ы?</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>GUID'ы используются при разработке корпоративного программного обеспечения на C#, Java и C++ в
+                            качестве ключей базы данных, идентификаторов компонентов или практически везде, где требуется
+                            действительно уникальный идентификатор. Идентификаторы GUID также используются для идентификации
+                            всех интерфейсов и объектов в COM-программировании.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="lines"></div>
+        
+        <div class="row">
+            <div class="col">
+                <div class="card mb-12 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h4 class="my-0 fw-normal text-center">Дополнительная информация</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item"><a href="https://ru.wikipedia.org/wiki/UUID" target="_blank">GUID (UUID) - информация на Wikipedia</a></li>
+                            <li class="list-group-item"><a href="https://docs.microsoft.com/ru-ru/dotnet/api/system.guid?view=net-6.0" target="_blank">Структура GUID'а</a></li>
+                            <li class="list-group-item"><a href="https://www.ietf.org/rfc/rfc4122.txt" target="_blank">RFC 4122</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <label for="formatAddHyphens">В верхнем регистре:</label>
-            <input type="checkbox"
-                   id="formatUppercase"
-                   class="form-check-input"
-                   aria-label="Привести к верхнему регистру"
-                   aria-describedby="basic-addon1"
-                   @bind="_formatToUpperCase">
-        </div>
-        <div class="col-md-3">
-            <label for="formatAddBraces">Фигурные скобки:</label>
-            <input type="checkbox"
-                   id="formatAddBraces"
-                   class="form-check-input"
-                   aria-label="Добавить фигурные скобки"
-                   aria-describedby="basic-addon1"
-                   @bind="_formatAddBraces">
-
-            <label for="encodingBase64">Base64:</label>
-            <input type="checkbox"
-                   id="encodingBase64"
-                   class="form-check-input"
-                   aria-label="BASE64"
-                   aria-describedby="basic-addon1"
-                   @bind="_encodingBase64">
-        </div>
-    </div>
-    <hr class="my-4">
-    <div class="input-group mb-3">
-        <div class="input-group">
-            <textarea class="form-control" rows="@TextAreaRowsSize" readonly="readonly"
-                aria-label="Сформированные GUID'ы">@_generatedGuidsPresentation</textarea>
-        </div>
-    </div>
-    <hr class="my-4">
+        <div class="lines"></div>
+    </main>
 </div>
-
-<div class="container">
-    <div class="row">
-        <div class="col-sm">
-            <div class="alert alert-primary" role="alert">
-                <h4>Что такое GUID?</h4>
-                <p>GUID (он же UUID) - это аббревиатура от 'Globally Unique Identifier' (или 'Universally Unique
-                    Identifier'). Это 128-битное целое число, используемое для идентификации ресурсов. Термин GUID
-                    обычно используется разработчиками, работающими с технологиями Microsoft, в то время как UUID
-                    используется везде.</p>
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="alert alert-primary" role="alert">
-                <h4>Насколько уникален GUID?</h4>
-                <p>128-битный код достаточно велик, а алгоритм генерации достаточно уникален, чтобы, если бы в течение 1
-                    года генерировалось 1 000 000 000 идентификаторов GUID в секунду, вероятность дублирования
-                    составляла бы всего 50%. Или если бы каждый человек на Земле сгенерировал 600 000 000
-                    идентификаторов GUID, вероятность дублирования составляла бы всего 50%.</p>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            <div class="alert alert-primary" role="alert">
-                <h4>Как используются GUID'ы?</h4>
-                <p>GUID'ы используются при разработке корпоративного программного обеспечения на C#, Java и C++ в
-                    качестве ключей базы данных, идентификаторов компонентов или практически везде, где требуется
-                    действительно уникальный идентификатор. Идентификаторы GUID также используются для идентификации
-                    всех интерфейсов и объектов в COM-программировании.</p>
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="alert alert-primary" role="alert">
-                <h4>Дополнительная информация</h4>
-                <a href="https://ru.wikipedia.org/wiki/UUID" target="_blank">GUID (UUID) - информация на Wikipedia</a>
-                <a href="https://docs.microsoft.com/ru-ru/dotnet/api/system.guid?view=net-6.0" target="_blank">Структура
-                    GUID'а</a>
-                <a href="https://www.ietf.org/rfc/rfc4122.txt" target="_blank">RFC 4122</a>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 @code {
     private const int MaxGuidToGenerate = 10000;
