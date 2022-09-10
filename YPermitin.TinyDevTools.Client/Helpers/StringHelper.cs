@@ -5,7 +5,7 @@
         public static string Base64Encode(string sourceValue)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(sourceValue);
-            return System.Convert.ToBase64String(plainTextBytes);
+            return Convert.ToBase64String(plainTextBytes);
         }
     }
 }

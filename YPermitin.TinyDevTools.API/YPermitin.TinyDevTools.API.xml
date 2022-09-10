@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>YPermitin.TinyDevTools.API</name>
+    </assembly>
+    <members>
+        <member name="T:YPermitin.TinyDevTools.API.Controllers.MyIPController">
+            <summary>
+            Работа с информацией о клиенте
+            </summary>
+        </member>
+        <member name="M:YPermitin.TinyDevTools.API.Controllers.MyIPController.GetClientInfo">
+            <summary>
+            Получение информации о клиенте
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:YPermitin.TinyDevTools.API.Models.ClientInfo">
+            <summary>
+            Информация о клиенте
+            </summary>
+        </member>
+        <member name="P:YPermitin.TinyDevTools.API.Models.ClientInfo.IP">
+            <summary>
+            IP-адрес клиента
+            </summary>
+        </member>
+        <member name="P:YPermitin.TinyDevTools.API.Models.ClientInfo.UserAgent">
+            <summary>
+            Информация о браузере
+            </summary>
+        </member>
+        <member name="T:YPermitin.TinyDevTools.API.Models.ErrorDetails">
+            <summary>
+            Информация об ошибке
+            </summary>
+        </member>
+        <member name="P:YPermitin.TinyDevTools.API.Models.ErrorDetails.StatusCode">
+            <summary>
+            Статус сообщения
+            </summary>
+        </member>
+        <member name="P:YPermitin.TinyDevTools.API.Models.ErrorDetails.Message">
+            <summary>
+            Текст сообщения
+            </summary>
+        </member>
+    </members>
+</doc>
