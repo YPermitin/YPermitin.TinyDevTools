@@ -94,7 +94,7 @@ namespace YPermitin.TinyDevTools.API.Extensions
 
                 setupAction.SwaggerEndpoint("/swagger/TinyDevToolsServiceAPISpecification/swagger.json",
                     "TinyDevTools service API");
-                setupAction.RoutePrefix = string.Empty; //"api";
+                setupAction.RoutePrefix = string.Empty;
 
                 setupAction.DefaultModelExpandDepth(2);
                 setupAction.DefaultModelRendering(ModelRendering.Model);
