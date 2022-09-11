@@ -43,7 +43,13 @@ namespace YPermitin.TinyDevTools.API.Extensions
                     Contact = new OpenApiContact()
                     {
                         Email = "i.need.ypermitin@yandex.ru",
-                        Name = "Permitin Yuriy"
+                        Name = "Permitin Yuriy (Пермитин Юрий)",
+                        Url = new Uri("https://github.com/YPermitin")
+                    },
+                    License = new OpenApiLicense()
+                    {
+                        Name = "Лицензия (MIT)",
+                        Url = new Uri("https://github.com/YPermitin/YPermitin.TinyDevTools/blob/main/LICENSE")
                     }
                 });
 
@@ -88,7 +94,7 @@ namespace YPermitin.TinyDevTools.API.Extensions
 
                 setupAction.SwaggerEndpoint("/swagger/TinyDevToolsServiceAPISpecification/swagger.json",
                     "TinyDevTools service API");
-                setupAction.RoutePrefix = "api";
+                setupAction.RoutePrefix = string.Empty; //"api";
 
                 setupAction.DefaultModelExpandDepth(2);
                 setupAction.DefaultModelRendering(ModelRendering.Model);
@@ -175,16 +181,17 @@ namespace YPermitin.TinyDevTools.API.Extensions
         {
             services.AddMvc(setupAction =>
             {
-                setupAction.Filters.Add(
-                    new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
-                setupAction.Filters.Add(
-                    new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
-                setupAction.Filters.Add(
-                    new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
-                setupAction.Filters.Add(
-                    new ProducesDefaultResponseTypeAttribute());
-                setupAction.Filters.Add(
-                    new ProducesResponseTypeAttribute(StatusCodes.Status401Unauthorized));
+                // Отключен список стандартных ответов для методов API
+                //setupAction.Filters.Add(
+                //    new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
+                //setupAction.Filters.Add(
+                //    new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
+                //setupAction.Filters.Add(
+                //    new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+                //setupAction.Filters.Add(
+                //    new ProducesDefaultResponseTypeAttribute());
+                //setupAction.Filters.Add(
+                //    new ProducesResponseTypeAttribute(StatusCodes.Status401Unauthorized));
 
                 setupAction.ReturnHttpNotAcceptable = true;
                 var stringFormatter = setupAction.OutputFormatters.FirstOrDefault(f => f is StringOutputFormatter);
