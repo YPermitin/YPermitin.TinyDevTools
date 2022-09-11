@@ -6,9 +6,9 @@ using YPermitin.TinyDevTools.API.Models;
 namespace YPermitin.TinyDevTools.API.Controllers
 {
     /// <summary>
-    /// Работа с информацией о клиенте
+    /// Р Р°Р±РѕС‚Р° СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ РєР»РёРµРЅС‚Рµ
     /// </summary>
-    [ApiExplorerSettings(GroupName = "Информация о клиенте")]
+    [ApiExplorerSettings(GroupName = "РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РєР»РёРµРЅС‚Рµ")]
     [ApiController]
     [Route("myip")]
     public class MyIPController : ControllerBase
@@ -22,11 +22,11 @@ namespace YPermitin.TinyDevTools.API.Controllers
         }
 
         /// <summary>
-        /// Получение информации о клиенте
+        /// РџРѕР»СѓС‡РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РєР»РёРµРЅС‚Рµ
         /// </summary>
-        /// <returns>Объект с информацией о клиенте</returns>
-        /// <response code="200">Возвращает объект с информацией о текущем клиенте</response>
-        /// <response code="400">При ошибке распознавания данных клиента</response>
+        /// <returns>РћР±СЉРµРєС‚ СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ РєР»РёРµРЅС‚Рµ</returns>
+        /// <response code="200">Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕР±СЉРµРєС‚ СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ С‚РµРєСѓС‰РµРј РєР»РёРµРЅС‚Рµ</response>
+        /// <response code="400">РџСЂРё РѕС€РёР±РєРµ СЂР°СЃРїРѕР·РЅР°РІР°РЅРёСЏ РґР°РЅРЅС‹С… РєР»РёРµРЅС‚Р°</response>
         [HttpGet(Name = "GetClientInfo")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ClientInfo))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -34,8 +34,8 @@ namespace YPermitin.TinyDevTools.API.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public IActionResult GetClientInfo()
         {
-            // Формируем список клиентских заголовков, кром:
-            //  * User-Agent - т.к. этот заголовок выводится в отдельное поле.
+            // Р¤РѕСЂРјРёСЂСѓРµРј СЃРїРёСЃРѕРє РєР»РёРµРЅС‚СЃРєРёС… Р·Р°РіРѕР»РѕРІРєРѕРІ, РєСЂРѕРј:
+            //  * User-Agent - С‚.Рє. СЌС‚РѕС‚ Р·Р°РіРѕР»РѕРІРѕРє РІС‹РІРѕРґРёС‚СЃСЏ РІ РѕС‚РґРµР»СЊРЅРѕРµ РїРѕР»Рµ.
             var clientHeaders = _httpContextAccessor.GetAllHeaders()
                 .Where(e => e.Key != "User-Agent")
                 .Select(e => new ClientInfoRequestHeader()
