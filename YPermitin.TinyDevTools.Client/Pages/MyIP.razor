@@ -1,8 +1,5 @@
 ﻿@page "/myIP"
-@using System.Timers
 @using YPermitin.TinyDevTools.Client.Models
-@using YPermitin.TinyDevTools.Client.Services
-@inject ClipboardService ClipboardService
 @inject HttpClient ApiClient;
 
 <PageTitle>Мой IP</PageTitle>
@@ -12,6 +9,7 @@
 <div class="container">
     <main>
         <div class="lines"></div>
+
         <div class="text-center">
             <div class="input-group">
                 <span class="input-group-text">Мой IP-адрес</span>
@@ -19,25 +17,89 @@
                        class="form-control"
                        id="myIp"
                        placeholder="Мой IP-адрес"
-                       @bind="_clientIP"
+                       @bind="ClientIP"
                        readonly="readonly">
             </div>
         </div>
+
         <div class="lines"></div>
+
         <div class="text-center">
             <div class="input-group">
                 <span class="input-group-text">Имя браузера</span>
-                <textarea class="form-control" aria-label="Имя браузера" @bind="_userAgent" readonly="readonly"></textarea>
+                <textarea class="form-control" aria-label="Имя браузера" @bind="UserAgent" readonly="readonly"></textarea>
             </div>
         </div>
+
+        <div class="lines"></div>
+        
+        <h4 class="display-6 fw-bold text-center">Заголовки клиентского запроса</h4>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">Заголовок</th>
+                <th scope="col">Значение</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var headerItem in ClientRequestHeaders)
+            {
+                <tr>
+                    <td>@(headerItem.Key ?? "-")</td>
+                    <td>@(headerItem.Value ?? "-")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
         <div class="lines"></div>
     </main>
 </div>
 
 @code {
-    private string _clientIP = "<неизвестно>";
-    private string _userAgent = "<неизвестно>";
-    
+    private ClientInfo _clientInfo = new();
+
+    private string ClientIP
+    {
+        get
+        {
+            if (_clientInfo != null && !string.IsNullOrEmpty(_clientInfo.IP))
+                return _clientInfo.IP;
+            return "-";
+        }
+        set
+        {
+        }
+    }
+
+    private string UserAgent
+    {
+        get
+        {
+            if (_clientInfo != null && !string.IsNullOrEmpty(_clientInfo.UserAgent))
+                return _clientInfo.UserAgent;
+            return "-";
+        }
+        set
+        {
+        }
+    }
+
+    private List<ClientInfoRequestHeader> ClientRequestHeaders
+    {
+        get
+        {
+            if (_clientInfo?.ClientRequestHeaders != null)
+                return _clientInfo.ClientRequestHeaders;
+
+            return new List<ClientInfoRequestHeader>();
+        }
+        set
+        {
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -47,26 +109,23 @@
 
     private async Task GetClientInfo()
     {
-        try
-        {
+        _clientInfo = null;
+        //try
+        //{
             var getIpResponse = await ApiClient.GetAsync("myip");
             if (getIpResponse.IsSuccessStatusCode)
             {
-                var clientInfo = await getIpResponse.Content.ReadFromJsonAsync<ClientInfo>();
-                _clientIP = clientInfo?.IP ?? "<неизвестно>";
-                _userAgent = clientInfo?.UserAgent ?? "<неизвестно>";
+                _clientInfo = await getIpResponse.Content.ReadFromJsonAsync<ClientInfo>();
             }
             else
             {
-                _clientIP = "<неизвестно>";
-                _userAgent = "<неизвестно>";
+                _clientInfo = new();
             }
-        }
-        catch
-        {
-            _clientIP = "<неизвестно>";
-            _userAgent = "<неизвестно>";
-        }
+        //}
+        //catch
+        //{
+        //    _clientInfo = new();
+        //}
 
         StateHasChanged();
     }

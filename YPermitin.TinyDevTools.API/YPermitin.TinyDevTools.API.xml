@@ -32,6 +32,26 @@
             Информация о браузере
             </summary>
         </member>
+        <member name="P:YPermitin.TinyDevTools.API.Models.ClientInfo.ClientRequestHeaders">
+            <summary>
+            Заголовки клиентского запроса
+            </summary>
+        </member>
+        <member name="T:YPermitin.TinyDevTools.API.Models.ClientInfoRequestHeader">
+            <summary>
+            Заголовок клиентского запроса
+            </summary>
+        </member>
+        <member name="P:YPermitin.TinyDevTools.API.Models.ClientInfoRequestHeader.Key">
+            <summary>
+            Ключ заголовка
+            </summary>
+        </member>
+        <member name="P:YPermitin.TinyDevTools.API.Models.ClientInfoRequestHeader.Value">
+            <summary>
+            Значение заголовка
+            </summary>
+        </member>
         <member name="T:YPermitin.TinyDevTools.API.Models.ErrorDetails">
             <summary>
             Информация об ошибке

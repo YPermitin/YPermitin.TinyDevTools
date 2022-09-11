@@ -14,5 +14,10 @@
         /// Информация о браузере
         /// </summary>
         public string UserAgent { get; set; }
+
+        /// <summary>
+        /// Заголовки клиентского запроса
+        /// </summary>
+        public List<ClientInfoRequestHeader> ClientRequestHeaders { get; set; }
     }
 }

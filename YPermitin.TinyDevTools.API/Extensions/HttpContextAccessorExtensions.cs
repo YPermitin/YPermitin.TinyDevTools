@@ -37,5 +37,14 @@
             }
             return default(T);
         }
+
+        public static Dictionary<string, string> GetAllHeaders(this IHttpContextAccessor httpContextAccessor)
+        {
+            Dictionary<string, string> output = httpContextAccessor.HttpContext?.Request.Headers
+                .Select(e => new KeyValuePair<string, string>(e.Key, e.Value.ToString()))
+                .ToDictionary(k => k.Key, v => v.Value);
+
+            return output;
+        }
     }
 }
