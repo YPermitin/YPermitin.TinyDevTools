@@ -10,7 +10,7 @@ namespace YPermitin.TinyDevTools.API.Controllers
     /// </summary>
     [ApiExplorerSettings(GroupName = "Информация о клиенте")]
     [ApiController]
-    [Route("api/myip")]
+    [Route("myip")]
     public class MyIPController : ControllerBase
     {
         private readonly IHttpContextAccessor _httpContextAccessor;

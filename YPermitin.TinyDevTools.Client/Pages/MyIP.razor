@@ -1,0 +1,73 @@
+﻿@page "/myIP"
+@using System.Timers
+@using YPermitin.TinyDevTools.Client.Models
+@using YPermitin.TinyDevTools.Client.Services
+@inject ClipboardService ClipboardService
+@inject HttpClient ApiClient;
+
+<PageTitle>Мой IP</PageTitle>
+
+<h1 class="display-4 fw-bold text-center">Мой IP</h1>
+
+<div class="container">
+    <main>
+        <div class="lines"></div>
+        <div class="text-center">
+            <div class="input-group">
+                <span class="input-group-text">Мой IP-адрес</span>
+                <input type="text"
+                       class="form-control"
+                       id="myIp"
+                       placeholder="Мой IP-адрес"
+                       @bind="_clientIP"
+                       readonly="readonly">
+            </div>
+        </div>
+        <div class="lines"></div>
+        <div class="text-center">
+            <div class="input-group">
+                <span class="input-group-text">Имя браузера</span>
+                <textarea class="form-control" aria-label="Имя браузера" @bind="_userAgent" readonly="readonly"></textarea>
+            </div>
+        </div>
+        <div class="lines"></div>
+    </main>
+</div>
+
+@code {
+    private string _clientIP = "<неизвестно>";
+    private string _userAgent = "<неизвестно>";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await GetClientInfo();
+    }
+
+    private async Task GetClientInfo()
+    {
+        try
+        {
+            var getIpResponse = await ApiClient.GetAsync("myip");
+            if (getIpResponse.IsSuccessStatusCode)
+            {
+                var clientInfo = await getIpResponse.Content.ReadFromJsonAsync<ClientInfo>();
+                _clientIP = clientInfo?.IP ?? "<неизвестно>";
+                _userAgent = clientInfo?.UserAgent ?? "<неизвестно>";
+            }
+            else
+            {
+                _clientIP = "<неизвестно>";
+                _userAgent = "<неизвестно>";
+            }
+        }
+        catch
+        {
+            _clientIP = "<неизвестно>";
+            _userAgent = "<неизвестно>";
+        }
+
+        StateHasChanged();
+    }
+}

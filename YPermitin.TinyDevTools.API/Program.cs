@@ -56,10 +56,22 @@ try
     var services = builder.Services;
 
     Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+    services.AddCors(policy =>
+    {
+        string[] allowedOrigins = configuration.GetSection("CORS:AllowedOrigins").Get<string[]>();
+
+        policy.AddPolicy("webAppAllowSpecificOrigins", corsPolicyBuilder =>
+        {
+            corsPolicyBuilder
+                .WithOrigins(allowedOrigins)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        });
+    });
     services.AddControllersExtension();
     services.AddMVCExtension();
     services.AddHttpContextAccessor();
-    services.AddCors();
     services.AddSwaggerExtension();
 
     var app = builder.Build();
@@ -74,7 +86,10 @@ try
     app.UseExceptionPage(env);
     app.ConfigureExceptionHandler(logger);
     app.UseHttpsRedirection();
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
     app.UseRouting();
+    app.UseCors("webAppAllowSpecificOrigins");
 
     app.UseSwagger();
     app.UseSwaggerExtension(typeof(Program));
@@ -83,10 +98,6 @@ try
     {
         endpoints.MapControllers();
     });
-
-    app.UseDefaultFiles();
-    app.UseStaticFiles();
-    app.UseCors();
 
     app.Run();
 }
