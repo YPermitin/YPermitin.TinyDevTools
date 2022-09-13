@@ -1,9 +1,12 @@
 ﻿@page "/guidGenerator"
 @using System.Text
 @using System.Timers
+@using OfficeOpenXml
+@using YPermitin.TinyDevTools.Client.Extensions.JSRuntime
 @using YPermitin.TinyDevTools.Client.Helpers
 @using YPermitin.TinyDevTools.Client.Services
 @inject ClipboardService ClipboardService
+@inject IJSRuntime JS
 
 <PageTitle>Генератор GUID</PageTitle>
 
@@ -13,12 +16,12 @@
 <div class="container">
     <main>
         <div class="row">
-            <div class="col-md-4">
-                <button class="btn btn-primary col-12" @onclick="GenerateGuid">Сформировать новые</button>
+            <div class="col-md-3">
+                <button class="btn btn-primary col-12" @onclick="GenerateGuid">Сформировать</button>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="input-group">
-                    <span class="input-group-text">Количество (1-@MaxGuidToGenerate)</span>
+                    <span class="input-group-text">Кол-во (1-@MaxGuidToGenerate)</span>
                     <input type="number" 
                            class="form-control" 
                            id="guidsCount" 
@@ -28,8 +31,11 @@
                            @bind="GuidsCount">
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <button class="@_copyToClipboardButtonClass" @onclick="CopyToClipboard">@_copyToClipboardButtonName</button>
+            </div>
+            <div class="col-md-3">
+                <button class="@_exportToExcelButtonClass" @onclick="SaveToExcel">@_exportToExcelButtonName</button>
             </div>
         </div>
         <div class="lines"></div>
@@ -153,12 +159,16 @@
     private bool _encodingBase64;
 
     private string? _generatedGuidsPresentation = string.Empty;
-    private readonly List<Guid> _generatedGuids = new();
-    private int TextAreaRowsSize => Math.Min(Math.Max(1, _generatedGuids.Count), 10);
+    private int _generatedGuidsCount;
+    private int TextAreaRowsSize => Math.Min(Math.Max(1, _generatedGuidsCount), 10);
 
     private string _copyToClipboardButtonName = "Скопировать в буфер";
     private string _copyToClipboardButtonClass = "btn btn-primary col-12";
     private Timer? _copyToClipboardTimer;
+
+    private string _exportToExcelButtonName = "Экспорт в Excel";
+    private string _exportToExcelButtonClass = "btn btn-primary col-12";
+    private Timer? _exportToExcelTimer;
 
     protected override void OnInitialized()
     {
@@ -166,6 +176,9 @@
 
         _copyToClipboardTimer = new Timer(1500);
         _copyToClipboardTimer.Elapsed += OnRestoreCopyToClipboardButton;
+
+        _exportToExcelTimer = new Timer(1500);
+        _exportToExcelTimer.Elapsed += OnRestoreExportToExcelButton;
 
         GenerateGuid();
     }
@@ -193,35 +206,78 @@
 
         StateHasChanged();
     }
+
+    private async Task SaveToExcel()
+    {
+        _exportToExcelButtonName = "Экспортировано в Excel";
+        _exportToExcelButtonClass = "btn btn-success col-12";
+
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        using (ExcelPackage excelPackage = new ExcelPackage())
+        {
+            var ws = excelPackage.Workbook.Worksheets.Add("GUIDs");
+            ws.Column(1).Width = 36;
+            ws.Cells["A1"].Value = "GUID";
+            ws.Cells["A1"].Style.Font.Bold = true;
+
+            string[] guidLines = _generatedGuidsPresentation.Split(
+                new[] { Environment.NewLine },
+                StringSplitOptions.None
+                );
+
+            int rowNumber = 1;
+            foreach (var guidLine in guidLines)
+            {
+                rowNumber += 1;
+                ws.Cells[$"A{rowNumber}"].Value = guidLine;
+            }
+
+            await JS.SaveAs("GUIDS.xlsx", await excelPackage.GetAsByteArrayAsync());
+        }
+
+        _exportToExcelTimer?.Stop();
+        _exportToExcelTimer?.Start();
+    }
+
+    private void OnRestoreExportToExcelButton(Object? source, ElapsedEventArgs e)
+    {
+        _exportToExcelButtonName = "Экспорт в Excel";
+        _exportToExcelButtonClass = "btn btn-primary col-12";
+
+        _exportToExcelTimer?.Stop();
+
+        StateHasChanged();
+    }
     
     private void GenerateGuid()
     {
-        _generatedGuids.Clear();
-        for (int i = 0; i < _guidsCount; i++)
-        {
-            _generatedGuids.Add(Guid.NewGuid());
-        }
-
         StringBuilder generatedGuidsPresentationBuilder = new StringBuilder();
 
-        foreach (var generatedGuid in _generatedGuids)
+        _generatedGuidsCount = 0;
+        for (int i = 0; i < _guidsCount; i++)
         {
-            string formattedGuid = generatedGuid.ToString();
-            
-            if (_formatToUpperCase)
-                formattedGuid = formattedGuid.ToUpper();
-            if (_formatAddBraces)
-                formattedGuid = "{" + formattedGuid + "}";
-            if (!_formatAddHyphens)
-                formattedGuid = formattedGuid.Replace("-", string.Empty);
-
-            if (_encodingBase64)
-                formattedGuid = StringHelper.Base64Encode(formattedGuid);
-            
-
+            Guid generatedGuid = Guid.NewGuid();
+            string formattedGuid = GetGuidAsString(generatedGuid);
             generatedGuidsPresentationBuilder.AppendLine(formattedGuid);
+            _generatedGuidsCount += 1;
         }
-
         _generatedGuidsPresentation = generatedGuidsPresentationBuilder.ToString();
+    }
+
+    private string GetGuidAsString(Guid guidValue)
+    {
+        string formattedGuid = guidValue.ToString();
+            
+        if (_formatToUpperCase)
+            formattedGuid = formattedGuid.ToUpper();
+        if (_formatAddBraces)
+            formattedGuid = "{" + formattedGuid + "}";
+        if (!_formatAddHyphens)
+            formattedGuid = formattedGuid.Replace("-", string.Empty);
+
+        if (_encodingBase64)
+            formattedGuid = StringHelper.Base64Encode(formattedGuid);
+
+        return formattedGuid;
     }
 }
