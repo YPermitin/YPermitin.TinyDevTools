@@ -66,3 +66,15 @@ a, .btn-link {
 .lines {
     margin-bottom: 15px;
 }
+.lines-5 {
+    margin-bottom: 5px;
+}
+.lines-10 {
+    margin-bottom: 10px;
+}
+.lines-15 {
+    margin-bottom: 15px;
+}
+.lines-20 {
+    margin-bottom: 20px;
+}

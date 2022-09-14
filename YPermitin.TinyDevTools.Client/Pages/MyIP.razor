@@ -1,6 +1,6 @@
 ﻿@page "/myIP"
 @using YPermitin.TinyDevTools.Client.Models
-@inject HttpClient ApiClient;
+@inject IHttpClientFactory ClientFactory;
 
 <PageTitle>Мой IP</PageTitle>
 
@@ -12,7 +12,7 @@
 
         <div class="text-center">
             <div class="input-group">
-                <span class="input-group-text">Мой IP-адрес</span>
+                <span class="input-group-text col-md-2">Мой IP-адрес</span>
                 <input type="text"
                        class="form-control"
                        id="myIp"
@@ -26,7 +26,7 @@
 
         <div class="text-center">
             <div class="input-group">
-                <span class="input-group-text">Имя браузера</span>
+                <span class="input-group-text col-md-2">Имя браузера</span>
                 <textarea class="form-control" aria-label="Имя браузера" @bind="UserAgent" readonly="readonly"></textarea>
             </div>
         </div>
@@ -58,8 +58,8 @@
 </div>
 
 @code {
+    private HttpClient _httpClient;
     private ClientInfo _clientInfo = new();
-
     private string ClientIP
     {
         get
@@ -72,7 +72,6 @@
         {
         }
     }
-
     private string UserAgent
     {
         get
@@ -85,7 +84,6 @@
         {
         }
     }
-
     private List<ClientInfoRequestHeader> ClientRequestHeaders
     {
         get
@@ -103,7 +101,7 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
+        _httpClient = ClientFactory.CreateClient("api");
         await GetClientInfo();
     }
 
@@ -112,7 +110,7 @@
         _clientInfo = null;
         try
         {
-            var getIpResponse = await ApiClient.GetAsync("myip");
+            var getIpResponse = await _httpClient.GetAsync("myip");
             if (getIpResponse.IsSuccessStatusCode)
             {
                 _clientInfo = await getIpResponse.Content.ReadFromJsonAsync<ClientInfo>();

@@ -1,0 +1,131 @@
+﻿@page "/fias"
+@using YPermitin.TinyDevTools.Client.Models
+@inject IHttpClientFactory ClientFactory;
+
+<PageTitle>ФИАС</PageTitle>
+
+<h1 class="display-4 fw-bold text-center"><a href="https://fias.nalog.ru/" target="_blank">ФИАС</a></h1>
+
+<div class="container">
+    <main>
+        <div class="lines-15"></div>
+        
+        <h4 class="display-6 fw-bold">Информация об актуальной версии</h4>
+
+        <div class="text-center lines-5">
+            <div class="input-group">
+                <span class="input-group-text col-md-2">Версия ФИАС</span>
+                <input type="text"
+                       class="form-control col-md-10"
+                       id="fiasTextVersion"
+                       placeholder="Версия ФИАС"
+                       @bind="_textVersion"
+                       readonly="readonly">
+            </div>
+        </div>
+        <div class="text-center lines-5">
+            <div class="input-group">
+                <span class="input-group-text col-md-2">Версия</span>
+                <input type="number"
+                       class="form-control col-md-10"
+                       id="fiasVersionId"
+                       placeholder="Версия"
+                       @bind="_versionId"
+                       readonly="readonly">
+            </div>
+        </div>
+        <div class="text-center lines-5">
+            <div class="input-group">
+                <span class="input-group-text col-md-2">Дата</span>
+                <input type="date"
+                       class="form-control col-md-10"
+                       id="fiasVersionDate"
+                       placeholder="Дата"
+                       @bind="_versionDate"
+                       readonly="readonly">
+            </div>
+        </div>
+        
+        <div class="lines-15"></div>
+        
+        <div class="text-center lines-5">
+            <div class="input-group">
+                <span class="input-group-text col-md-2">ГАР БД ФИАС</span>
+                <a class="btn btn-link col-md-5" href="@_urlGarFiasXmlDelta" target="_blank">Изменения (XML)</a>
+                <a class="btn btn-link col-md-5" href="@_urlGarFiasXmlComplete" target="_blank">Полная база (XML)</a>
+            </div>
+        </div>
+        
+        <div class="text-center lines-5">
+            <div class="input-group">
+                <span class="input-group-text col-md-2">КЛАДР 4</span>
+                <a class="btn btn-link col-md-5" href="@_urlKladr47ZComplete" target="_blank">Полная база (7Z)</a>
+                <a class="btn btn-link col-md-5" href="@_urlKladr4ArjComplete" target="_blank">Полная база (ARJ)</a>
+            </div>
+        </div>
+        
+        <div class="lines-15"></div>
+        
+        <h4 class="display-6 fw-bold">API инструментов</h4>
+        
+        <div class="text-center lines-5">
+            <div class="input-group">
+                <span class="input-group-text col-md-2">API</span>
+                <a class="btn btn-link col-md-10" href="https://fias.tinydevtools.ru" target="_blank">API на TinyDevTools</a>
+            </div>
+        </div>
+        
+        <div class="lines-15"></div>
+    </main>
+</div>
+
+@code {
+    private HttpClient _httpClient;
+    private FIASDistributionInfo _fiasActualFiasDistributionInfo = new();
+
+    private string _textVersion;
+    private int _versionId;
+    private DateTime _versionDate;
+    private string _urlGarFiasXmlComplete;
+    private string _urlGarFiasXmlDelta;
+    private string _urlKladr4ArjComplete;
+    private string _urlKladr47ZComplete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _httpClient = ClientFactory.CreateClient("fiasapi");
+        await GetFIASActualFiasDistributionInfo();
+    }
+
+    private async Task GetFIASActualFiasDistributionInfo()
+    {
+        _fiasActualFiasDistributionInfo = null;
+        try
+        {
+            var getIpResponse = await _httpClient.GetAsync("FIAS/actualDistribution");
+            if (getIpResponse.IsSuccessStatusCode)
+            {
+                _fiasActualFiasDistributionInfo = await getIpResponse.Content.ReadFromJsonAsync<FIASDistributionInfo>();
+            }
+            else
+            {
+                _fiasActualFiasDistributionInfo = new();
+            }
+        }
+        catch
+        {
+            _fiasActualFiasDistributionInfo = new();
+        }
+
+        _textVersion = _fiasActualFiasDistributionInfo?.TextVersion ?? string.Empty;
+        _versionId = _fiasActualFiasDistributionInfo?.VersionId ?? 0;
+        _versionDate = _fiasActualFiasDistributionInfo?.Date ?? DateTime.MinValue;
+        _urlGarFiasXmlComplete = _fiasActualFiasDistributionInfo?.GARFIASXml.Complete.AbsoluteUri;
+        _urlGarFiasXmlDelta = _fiasActualFiasDistributionInfo?.GARFIASXml.Delta.AbsoluteUri;
+        _urlKladr4ArjComplete = _fiasActualFiasDistributionInfo?.KLADR4Arj.Complete.AbsoluteUri;
+        _urlKladr47ZComplete = _fiasActualFiasDistributionInfo?.KLADR47z.Complete.AbsoluteUri;
+
+        StateHasChanged();
+    }
+}
