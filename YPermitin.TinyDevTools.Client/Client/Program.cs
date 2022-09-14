@@ -19,21 +19,21 @@ namespace YPermitin.TinyDevTools.Client.Client
             string apiUrl = configuration.GetValue("Api:Url", builder.HostEnvironment.BaseAddress);
             string fiasApiUrl = configuration.GetValue("FIASApi:Url", builder.HostEnvironment.BaseAddress);
 
-            #region HTTPClientSettings // Регистрируем HTTPClient для разных сервисов
+            #region HTTPClientSettings // Р РµРіРёСЃС‚СЂРёСЂСѓРµРј HTTPClient РґР»СЏ СЂР°Р·РЅС‹С… СЃРµСЂРІРёСЃРѕРІ
 
-            // 1. Клиент для API по умолчанию
+            // 1. РљР»РёРµРЅС‚ РґР»СЏ API РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
             builder.Services.AddHttpClient("api", (s, h) =>
             {
                 h.BaseAddress = new Uri(apiUrl);
             });
-            // 2. Клиент для API ФИАС
+            // 2. РљР»РёРµРЅС‚ РґР»СЏ API Р¤РРђРЎ
             builder.Services.AddHttpClient("fiasapi", (s, h) =>
             {
                 h.BaseAddress = new Uri(fiasApiUrl);
             });
 
-            // Для обратной совместимости оставляем возможность внедрения HttpClient,
-            // при этом будет использоваться клиент для API по умолчанию
+            // Р”Р»СЏ РѕР±СЂР°С‚РЅРѕР№ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё РѕСЃС‚Р°РІР»СЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІРЅРµРґСЂРµРЅРёСЏ HttpClient,
+            // РїСЂРё СЌС‚РѕРј Р±СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РєР»РёРµРЅС‚ РґР»СЏ API РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
             builder.Services.AddTransient<HttpClient>(s =>
             {
                 var factory = s.GetService<IHttpClientFactory>();
