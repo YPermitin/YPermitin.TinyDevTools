@@ -110,8 +110,8 @@
     private async Task GetClientInfo()
     {
         _clientInfo = null;
-        //try
-        //{
+        try
+        {
             var getIpResponse = await ApiClient.GetAsync("myip");
             if (getIpResponse.IsSuccessStatusCode)
             {
@@ -121,11 +121,11 @@
             {
                 _clientInfo = new();
             }
-        //}
-        //catch
-        //{
-        //    _clientInfo = new();
-        //}
+        }
+        catch
+        {
+            _clientInfo = new();
+        }
 
         StateHasChanged();
     }
