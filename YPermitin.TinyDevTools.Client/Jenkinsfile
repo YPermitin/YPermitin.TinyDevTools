@@ -1,0 +1,92 @@
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '1'))
+        disableConcurrentBuilds(abortPrevious: true)
+        timestamps()
+    }
+
+    environment {
+        OPERATION_ID = UUID.randomUUID().toString()
+    }
+
+     stages {
+        stage('Restore packages'){
+           steps{
+               echo 'Restore packages'
+               sh 'dotnet restore YPermitin.TinyDevTools.sln'
+            }
+        }
+        stage('Clean'){
+           steps{
+               echo 'Clean'
+               sh 'dotnet clean YPermitin.TinyDevTools.sln --configuration Release'
+            }
+         }
+         stage('Build'){
+           steps{
+               echo 'Build'
+               sh 'dotnet build YPermitin.TinyDevTools.sln --configuration Release --no-restore'
+            }
+         }
+         stage('Tests'){
+           steps{
+               echo 'Tests'
+            
+            }
+         }
+         stage('Publish'){
+             steps{
+               echo 'Publish'
+             }
+        }
+        stage('Deploy'){
+            steps{
+                echo 'Deploy'             
+            }
+        }
+    }
+}
+
+def getVarible(branchName, varName) {
+
+    if("origin/main".equals(branchName)) 
+    {        
+        VariblesMap = getVariblesMapMain();
+    } else if("origin/develop".equals(branchName)) 
+    {
+        
+        VariblesMap = getVariblesMapDevelop();
+    } else 
+    {
+        error('Unknown branch name: ' + branchName);
+    }
+
+    if(!VariblesMap.containsKey(varName)){
+
+        error('Unknown variable name: ' + varName);
+    }
+
+    result = VariblesMap[varName];
+
+    if(result == null || (result instanceof String && result.length() == 0))
+    {
+        error('Value variable undefined, name: ' + varName);
+    }
+    
+    return result;
+}
+
+def getVariblesMapMain() {
+
+    def result = [:];
+
+    return result;
+}
+
+def getVariblesMapDevelop() {
+
+    def result = [:];
+
+    return result;
+}
