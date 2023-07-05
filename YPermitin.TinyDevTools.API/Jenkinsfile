@@ -40,7 +40,7 @@ pipeline {
          stage('Publish'){
              steps{
                echo 'Publish'
-               sh 'dotnet publish YPermitin.TinyDevTools.Client/YPermitin.TinyDevTools.Client.csproj --configuration Release --no-restore'
+               sh 'dotnet publish YPermitin.TinyDevTools.API/YPermitin.TinyDevTools.API.csproj --configuration Release --no-restore'
                echo "${BUILD_TAG_INFO_COMMAND}"
              }
         }
@@ -57,16 +57,16 @@ pipeline {
                                     sshTransfer(
                                         cleanRemote: true, 
                                         excludes: '', 
-                                        execCommand: 'bash /var/jenkins/scripts/deploy.YPermitin.TinyDevTools.Client.sh', 
+                                        execCommand: 'bash /var/jenkins/scripts/deploy.YPermitin.TinyDevTools.API.sh', 
                                         execTimeout: 120000, 
                                         flatten: false, 
                                         makeEmptyDirs: false, 
                                         noDefaultExcludes: false, 
                                         patternSeparator: '[, ]+', 
-                                        remoteDirectory: 'client', 
+                                        remoteDirectory: 'api', 
                                         remoteDirectorySDF: false, 
-                                        removePrefix: 'YPermitin.TinyDevTools.Client/bin/Release/net6.0/publish', 
-                                        sourceFiles: 'YPermitin.TinyDevTools.Client/bin/Release/net6.0/publish/**/*')
+                                        removePrefix: 'YPermitin.TinyDevTools.API/bin/Release/net6.0/publish', 
+                                        sourceFiles: 'YPermitin.TinyDevTools.API/bin/Release/net6.0/publish/**/*')
                                 ], 
                             usePromotionTimestamp: false, 
                             useWorkspaceInPromotion: false, 
