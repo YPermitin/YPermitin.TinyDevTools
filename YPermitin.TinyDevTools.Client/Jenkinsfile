@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        OPERATION_ID = UUID.randomUUID().toString()
+        SSH_CONFIG_NAME = getVarible(env.GIT_BRANCH, "SSH_CONFIG_NAME")
         INFO_FILE = getVarible(env.GIT_BRANCH, "INFO_FILE")
         BUILD_TAG_INFO_COMMAND = "echo \"BUILD_TAG: ${BUILD_TAG}\" >> ${INFO_FILE}"
     }
@@ -46,7 +46,31 @@ pipeline {
         }
         stage('Deploy'){
             steps{
-                echo 'Deploy'             
+                echo 'Deploy'
+                archiveArtifacts artifacts: '**', followSymlinks: false
+                sshPublisher(
+                    publishers: 
+                        [
+                            sshPublisherDesc(
+                                configName: SSH_CONFIG_NAME, 
+                                transfers: [
+                                    sshTransfer(
+                                        cleanRemote: true, 
+                                        excludes: '', 
+                                        execCommand: 'ls', 
+                                        execTimeout: 120000, 
+                                        flatten: false, 
+                                        makeEmptyDirs: false, 
+                                        noDefaultExcludes: false, 
+                                        patternSeparator: '[, ]+', 
+                                        remoteDirectory: 'api', 
+                                        remoteDirectorySDF: false, 
+                                        removePrefix: 'YPermitin.TinyDevTools.Client/bin/Release/net6.0/publish', 
+                                        sourceFiles: 'YPermitin.TinyDevTools.Client/bin/Release/net6.0/publish/**/*')
+                                ], 
+                            usePromotionTimestamp: false, 
+                            useWorkspaceInPromotion: false, 
+                            verbose: true)])
             }
         }
     }
@@ -85,6 +109,7 @@ def getVariblesMapMain() {
 
     def result = [:];
     result["INFO_FILE"]         = "jenkins_build_info";
+    result["SSH_CONFIG_NAME"]   = "YPermitin.TinyDevTools.Client.SSH.Server";
 
     return result;
 }
@@ -93,6 +118,7 @@ def getVariblesMapDevelop() {
 
     def result = [:];
     result["INFO_FILE"]         = "jenkins_build_info";
+    result["SSH_CONFIG_NAME"]   = "YPermitin.TinyDevTools.Client.SSH.Server";
 
     return result;
 }
