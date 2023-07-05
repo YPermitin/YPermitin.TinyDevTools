@@ -57,13 +57,13 @@ pipeline {
                                     sshTransfer(
                                         cleanRemote: true, 
                                         excludes: '', 
-                                        execCommand: 'ls', 
+                                        execCommand: 'bash /var/jenkins/scripts/deploy.YPermitin.TineDevTools.Client.sh', 
                                         execTimeout: 120000, 
                                         flatten: false, 
                                         makeEmptyDirs: false, 
                                         noDefaultExcludes: false, 
                                         patternSeparator: '[, ]+', 
-                                        remoteDirectory: 'api', 
+                                        remoteDirectory: 'client', 
                                         remoteDirectorySDF: false, 
                                         removePrefix: 'YPermitin.TinyDevTools.Client/bin/Release/net6.0/publish', 
                                         sourceFiles: 'YPermitin.TinyDevTools.Client/bin/Release/net6.0/publish/**/*')
@@ -71,6 +71,7 @@ pipeline {
                             usePromotionTimestamp: false, 
                             useWorkspaceInPromotion: false, 
                             verbose: true)])
+                sh "${CREATE_INFO_COMMAND}"
             }
         }
     }
