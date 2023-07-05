@@ -71,7 +71,6 @@ pipeline {
                             usePromotionTimestamp: false, 
                             useWorkspaceInPromotion: false, 
                             verbose: true)])
-                sh "${CREATE_INFO_COMMAND}"
             }
         }
     }
