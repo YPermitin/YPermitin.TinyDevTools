@@ -8,6 +8,8 @@ pipeline {
 
     environment {
         OPERATION_ID = UUID.randomUUID().toString()
+        INFO_FILE = getVarible(env.GIT_BRANCH, "INFO_FILE")
+        BUILD_TAG_INFO_COMMAND = "echo \"BUILD_TAG: ${BUILD_TAG}\" >> ${INFO_FILE}"
     }
 
      stages {
@@ -38,6 +40,8 @@ pipeline {
          stage('Publish'){
              steps{
                echo 'Publish'
+               sh 'dotnet publish YPermitin.TinyDevTools.Client/YPermitin.TinyDevTools.Client.csproj --configuration Release --no-restore'
+               echo "${BUILD_TAG_INFO_COMMAND}"
              }
         }
         stage('Deploy'){
@@ -80,6 +84,7 @@ def getVarible(branchName, varName) {
 def getVariblesMapMain() {
 
     def result = [:];
+    result["INFO_FILE"]         = "jenkins_build_info";
 
     return result;
 }
@@ -87,6 +92,7 @@ def getVariblesMapMain() {
 def getVariblesMapDevelop() {
 
     def result = [:];
+    result["INFO_FILE"]         = "jenkins_build_info";
 
     return result;
 }
