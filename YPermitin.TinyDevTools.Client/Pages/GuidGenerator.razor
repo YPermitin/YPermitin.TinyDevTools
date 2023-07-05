@@ -261,7 +261,7 @@
             generatedGuidsPresentationBuilder.AppendLine(formattedGuid);
             _generatedGuidsCount += 1;
         }
-        _generatedGuidsPresentation = generatedGuidsPresentationBuilder.ToString();
+        _generatedGuidsPresentation = generatedGuidsPresentationBuilder.ToString().Trim();
     }
 
     private string GetGuidAsString(Guid guidValue)
@@ -278,6 +278,6 @@
         if (_encodingBase64)
             formattedGuid = StringHelper.Base64Encode(formattedGuid);
 
-        return formattedGuid;
+        return formattedGuid.Trim();
     }
 }
